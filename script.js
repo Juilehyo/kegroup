@@ -162,6 +162,6 @@ if (contactForm) {
     const body = encodeURIComponent(
       `Name: ${name}\nEmail: ${email}\n${interest ? `Interested in: ${interest}\n\n` : '\n'}${message}`
     );
-    window.location.href = `mailto:partners@ke-group.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:sales@kimeun.com?subject=${subject}&body=${body}`;
   });
 }
