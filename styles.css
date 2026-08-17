@@ -301,7 +301,13 @@ a { color: inherit; }
 
 /* Mammoth reads as a tall closing plate. */
 .brand--mmth .brand__media { aspect-ratio: 4 / 5; }
-.brand--tlj  .brand__media { aspect-ratio: 4 / 3; }
+
+/* The Tous les Jours photograph is a tall 1:2 portrait whose product sits in
+   the lower half, over an empty backdrop. A landscape slot would throw away
+   63% of it and centre on the blank space, so the slot itself goes portrait
+   and the crop is anchored to the bottom. */
+.brand--tlj  .brand__media { aspect-ratio: 3 / 4; }
+.brand--tlj  .brand__media img { object-position: center bottom; }
 
 /* The pinned statement holds the right column for the whole section. */
 /* Rows are named explicitly: `1 / -1` would collapse to row 1 here, since
@@ -410,8 +416,11 @@ a { color: inherit; }
   .brand--lead { display: flex; flex-direction: column; }
   .brand--lead .brand__media { width: 100%; }
   .brand--lead .brand__body { padding-left: 0; }
-  .brand--mmth .brand__media,
-  .brand--tlj .brand__media { aspect-ratio: 3 / 2; }
+  /* Mammoth's storefront shot crops happily to landscape on a single column.
+     Tous les Jours does not — its product sits in the lower half of a tall
+     portrait, so it keeps a portrait slot at every width. */
+  .brand--mmth .brand__media { aspect-ratio: 3 / 2; }
+  .brand--tlj .brand__media { aspect-ratio: 4 / 5; }
 }
 
 /* ============ Momentum ============ */

@@ -5,6 +5,7 @@
 # committed assets; keeping the multi-megabyte originals out of history keeps
 # clones small (git history is permanent, so they can't be pruned later).
 assets/bg1.png
+assets/Tous.png
 
 # macOS AppleDouble sidecars. The repo lives on an exFAT volume, which cannot
 # store extended attributes natively, so the OS writes a ._<name> file beside
