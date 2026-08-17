@@ -26,6 +26,12 @@
 
   --measure: 36em;
   --pad-x: clamp(1.25rem, 5vw, 4.5rem);
+  --maxw: 1600px;
+  /* Caps the content column on wide displays while section backgrounds stay
+     full-bleed. The percentage resolves against the section's own width, so
+     this is scrollbar-safe in a way 100vw is not. Below --maxw it collapses
+     to --pad-x and nothing changes. */
+  --gutter: max(var(--pad-x), (100% - var(--maxw)) / 2);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -108,7 +114,7 @@ a { color: inherit; }
 
 /* ============ Hero (bold editorial statement) ============ */
 .hero {
-  padding: clamp(2rem, 5vh, 3.5rem) var(--pad-x) 0;
+  padding: clamp(2rem, 5vh, 3.5rem) var(--gutter) 0;
   background: var(--paper);
   overflow: hidden;
 }
@@ -125,22 +131,23 @@ a { color: inherit; }
   flex-direction: column;
   justify-content: space-between;
 }
+/* The seal marks carry the K&E logo artwork — a stamped seal on a
+   transparent ground. `contain` rather than `cover` so the stamp's rough
+   outer edge is never cropped, and no radius/clip for the same reason. */
 .hero__mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 112px;
   height: 112px;
-  background: var(--seal);
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 2rem;
-  border-radius: 10px;
   text-decoration: none;
-  letter-spacing: 0.01em;
 }
-.hero__mark .amp { color: var(--brass-bright); }
+.hero__mark img,
+.nav-mini__mark img,
+.nav-overlay__mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
 .hero__kicker {
   font-family: "Satoshi", var(--font-body), sans-serif;
   font-weight: 400;
@@ -226,29 +233,106 @@ a { color: inherit; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* The plate sits right of centre in the source, so on narrow viewports —
+     where cover crops hard horizontally — hold the focal point to the right
+     rather than centring on the empty table. */
+  object-position: 78% center;
   transform: scale(calc(1 + 0.14 * var(--zp)));
   will-change: transform;
 }
 /* ============ Portfolio ============ */
-.brands { padding: clamp(4rem, 9vw, 7rem) var(--pad-x); }
+.brands { padding: clamp(4rem, 9vw, 7rem) var(--gutter); }
 
 .section-head { margin-bottom: clamp(3rem, 6vw, 4.5rem); }
 
-.brand {
+.brands__head { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+
+/* Editorial stage: two staggered photo columns on the left, and a third
+   column on the right that holds a statement pinned through the scroll.
+   Thin vertical rules divide the three columns — drawn as background
+   gradients so they run the full height of the section rather than
+   stopping at each card. Reading order: bhc → Tous les Jours → SALT →
+   Mammoth, with bhc leading wide across both left columns and Mammoth
+   closing the left column at the bottom. */
+.brands__stage {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 5vw, 5rem);
-  align-items: center;
-  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  grid-template-columns: 23% 43% 34%;
+  row-gap: clamp(3rem, 7vw, 6.5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
   border-top: 1px solid var(--hairline);
+  background-image:
+    linear-gradient(var(--hairline), var(--hairline)),
+    linear-gradient(var(--hairline), var(--hairline));
+  background-size: 1px 100%, 1px 100%;
+  background-position: 23% 0, 66% 0;
+  background-repeat: no-repeat;
 }
-.brand--flip .brand__media { order: 2; }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Column assignments — explicit so the stagger is art-directed, not
+   left to auto-flow. */
+#bhc     { grid-column: 1 / 3; grid-row: 1; padding-right: var(--col-pad); }
+#tlj     { grid-column: 2;     grid-row: 2; padding: 0 var(--col-pad); }
+#salt    { grid-column: 2;     grid-row: 3; padding: 0 var(--col-pad); }
+#mammoth { grid-column: 1;     grid-row: 3; padding-right: var(--col-pad); margin-top: clamp(2.5rem, 8vw, 7rem); }
+
+.brands__stage { --col-pad: clamp(0.9rem, 1.5vw, 1.6rem); }
+
+/* bhc leads with a wide photo that crosses the first rule, its caption
+   dropping into the centre column beneath. */
+.brand--lead {
+  display: grid;
+  grid-template-columns: 23fr 43fr;
+}
+.brand--lead .brand__media {
+  grid-column: 1 / -1;
+  width: 68%;
+  aspect-ratio: 3 / 2;
+}
+.brand--lead .brand__body {
+  grid-column: 2;
+  padding-left: var(--col-pad);
+}
+
+/* Mammoth reads as a tall closing plate. */
+.brand--mmth .brand__media { aspect-ratio: 4 / 5; }
+
+/* The Tous les Jours photograph is a tall 1:2 portrait whose product sits in
+   the lower half, over an empty backdrop. A landscape slot would throw away
+   63% of it and centre on the blank space, so the slot itself goes portrait
+   and the crop is anchored to the bottom. */
+.brand--tlj  .brand__media { aspect-ratio: 3 / 4; }
+.brand--tlj  .brand__media img { object-position: center bottom; }
+
+/* The pinned statement holds the right column for the whole section. */
+/* Rows are named explicitly: `1 / -1` would collapse to row 1 here, since
+   an undeclared grid-template-rows leaves every row implicit. */
+.brands__pin {
+  grid-column: 3;
+  grid-row: 1 / 4;
+  padding-left: clamp(1.4rem, 3vw, 3rem);
+}
+.brands__statement {
+  position: sticky;
+  top: clamp(6rem, 34vh, 20rem);
+  max-width: 14em;
+  font-size: clamp(1.5rem, 2.7vw, 2.75rem);
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  transition: opacity 0.25s linear;
+}
 
 .brand__media {
   --zp: 0;
   border-radius: 4px;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   overflow: hidden;
+  margin-bottom: 1.2rem;
 }
 .brand__media img {
   width: 100%;
@@ -259,48 +343,91 @@ a { color: inherit; }
 }
 .brand--mmth .brand__media img { object-position: center 30%; }
 
-.brand__body h3 { margin-bottom: 0.2rem; }
-.brand__kr {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  margin-bottom: 1.1rem;
+.brand__body h3 {
+  font-family: "Satoshi", var(--font-body), sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  margin-bottom: 0.65rem;
 }
-.brand__body > p:not(.eyebrow):not(.brand__kr) { margin-bottom: 1.4rem; font-size: 0.98rem; }
+.brand__body p {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
 
 .brand__link {
-  display: inline-block;
-  margin-top: 1.2rem;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 1.1rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.88rem;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.brand__link:hover {
   color: var(--brass);
-  text-underline-offset: 4px;
+  border-color: currentColor;
 }
 
-.chips {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+/* Below the three-column threshold the statement unpins and leads the
+   section, and the photos fall into two plain columns. */
+@media (max-width: 1040px) {
+  .brands__stage {
+    grid-template-columns: 1fr 1fr;
+    background-position: 50% 0;
+    background-size: 1px 100%, 0 0;
+  }
+  #bhc     { grid-column: 1 / -1; grid-row: 2; padding-right: 0; }
+  #tlj     { grid-column: 1;      grid-row: 3; padding: 0 var(--col-pad) 0 0; }
+  #salt    { grid-column: 2;      grid-row: 3; padding: 0 0 0 var(--col-pad); }
+  #mammoth { grid-column: 1;      grid-row: 4; padding-right: var(--col-pad); margin-top: 0; }
+  .brand--lead { grid-template-columns: 1fr 1fr; }
+  .brand--lead .brand__media { width: 100%; }
+  .brands__pin {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding-left: 0;
+    padding-bottom: clamp(1rem, 3vw, 2rem);
+  }
+  .brands__statement { position: static; max-width: 20em; }
 }
-.chips li {
-  font-size: 0.8rem;
-  font-weight: 400;
-  padding: 0.3rem 0.75rem;
-  border: 1px solid rgba(28, 25, 22, 0.25);
-  border-radius: 999px;
+
+@media (max-width: 640px) {
+  .brands__stage {
+    grid-template-columns: 1fr;
+    background-image: none;
+    row-gap: 0;
+  }
+  #bhc, #tlj, #salt, #mammoth {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 0;
+    padding: clamp(2rem, 8vw, 2.75rem) 0 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .brands__pin { grid-column: 1; grid-row: 1; }
+  .brand--lead { display: flex; flex-direction: column; }
+  .brand--lead .brand__media { width: 100%; }
+  .brand--lead .brand__body { padding-left: 0; }
+  /* Mammoth's storefront shot crops happily to landscape on a single column.
+     Tous les Jours does not — its product sits in the lower half of a tall
+     portrait, so it keeps a portrait slot at every width. */
+  .brand--mmth .brand__media { aspect-ratio: 3 / 2; }
+  .brand--tlj .brand__media { aspect-ratio: 4 / 5; }
 }
-.brand--tlj .chips li { border-color: rgba(46, 107, 79, 0.45); color: var(--tlj); }
-.brand--mmth .chips li { border-color: rgba(95, 122, 30, 0.5); color: var(--mmth); }
-.brand--bhc .chips li { border-color: rgba(168, 124, 52, 0.55); color: #8a6510; }
-.brand--salt .chips li { border-color: rgba(168, 124, 52, 0.5); color: var(--brass); }
 
 /* ============ Momentum ============ */
 .momentum {
   background: var(--ink);
   color: var(--paper);
-  padding: clamp(4rem, 9vw, 7rem) var(--pad-x);
+  padding: clamp(4rem, 9vw, 7rem) var(--gutter);
 }
 .momentum .section-head h2 {
   font-size: clamp(2.2rem, 5.2vw, 4.2rem);
@@ -331,13 +458,15 @@ a { color: inherit; }
 .stat p { font-size: 0.92rem; opacity: 0.82; }
 .momentum__source {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  /* 0.72rem rendered at 11.5px — below the ~12px floor where small mono
+     type stops being comfortably legible on phones. */
+  font-size: 0.78rem;
   opacity: 0.5;
   margin-top: 1.2rem;
 }
 
 /* ============ Partners ============ */
-.partners { padding: clamp(4rem, 9vw, 7rem) var(--pad-x); }
+.partners { padding: clamp(4rem, 9vw, 7rem) var(--gutter); }
 .partners__intro { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
 .partners__intro p:last-child { margin-top: 1.2rem; }
 
@@ -359,7 +488,7 @@ a { color: inherit; }
 /* ============ Contact ============ */
 .contact {
   background: var(--paper-deep);
-  padding: clamp(4rem, 9vw, 7rem) var(--pad-x);
+  padding: clamp(4rem, 9vw, 7rem) var(--gutter);
 }
 .contact__inner {
   display: grid;
@@ -416,7 +545,7 @@ a { color: inherit; }
 .footer {
   background: var(--ink);
   color: var(--paper);
-  padding: clamp(2.5rem, 6vw, 4rem) var(--pad-x) 2rem;
+  padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) 2rem;
   overflow: hidden;
 }
 .footer__wordmark {
@@ -471,9 +600,7 @@ a { color: inherit; }
 /* ============ Responsive ============ */
 @media (max-width: 900px) {
   .hero__top { grid-template-columns: 1fr; }
-  .brand,
   .contact__inner { grid-template-columns: 1fr; }
-  .brand--flip .brand__media { order: 0; }
   .momentum__grid { grid-template-columns: 1fr 1fr; }
   .partners__grid { grid-template-columns: 1fr; }
   .hero__mark { margin-bottom: 1.5rem; }
@@ -495,11 +622,23 @@ a { color: inherit; }
   .momentum__grid { grid-template-columns: 1fr; }
 }
 
+/* On phones the four hero links no longer fit one row, and wrapping leaves a
+   ragged 3 + 1. A fixed two-up grid reads as deliberate instead. */
+@media (max-width: 600px) {
+  .hero__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: start;
+    gap: 0.75rem 1rem;
+  }
+  .hero__navlink-text { text-align: left; }
+}
+
 /* ============ Compact nav — appears once scrolled past the hero ============ */
 .nav-mini {
   position: fixed;
   top: clamp(1.25rem, 3vh, 2rem);
-  right: var(--pad-x);
+  right: var(--gutter);
   z-index: 150;
   display: flex;
   flex-direction: column;
@@ -516,20 +655,11 @@ a { color: inherit; }
   pointer-events: auto;
 }
 .nav-mini__mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 48px;
   height: 48px;
-  background: var(--seal);
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.95rem;
-  border-radius: 8px;
   text-decoration: none;
 }
-.nav-mini__mark .amp { color: var(--brass-bright); }
 .nav-mini__burger {
   width: 48px;
   height: 36px;
@@ -577,14 +707,14 @@ a { color: inherit; }
   align-items: flex-start;
   justify-content: space-between;
 }
+/* The overlay ground is the same seal red as the logo's own field, so on
+   this surface the mark reads as its white frame and glyph alone. */
 .nav-overlay__mark {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: #fff;
+  display: block;
+  width: 52px;
+  height: 52px;
   text-decoration: none;
 }
-.nav-overlay__mark .amp { color: rgba(255, 255, 255, 0.6); }
 .nav-overlay__close {
   background: none;
   border: none;
@@ -656,7 +786,7 @@ a { color: inherit; }
   color: rgba(255, 255, 255, 0.92);
 }
 
-.about-founders { padding: clamp(4rem, 9vw, 7rem) var(--pad-x); }
+.about-founders { padding: clamp(4rem, 9vw, 7rem) var(--gutter); }
 .about-founders .section-head { margin-bottom: clamp(2rem, 5vw, 3.5rem); }
 .about-founders .section-head h2 { max-width: none; }
 
@@ -671,7 +801,7 @@ a { color: inherit; }
 .founder h3 { font-size: 1.15rem; font-weight: 700; }
 .founder p { max-width: 42em; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.7; }
 
-.about-insights { padding: clamp(4rem, 9vw, 7rem) var(--pad-x) clamp(5rem, 10vw, 8rem); }
+.about-insights { padding: clamp(4rem, 9vw, 7rem) var(--gutter) clamp(5rem, 10vw, 8rem); }
 .about-insights .section-head { margin-bottom: clamp(2rem, 5vw, 3.5rem); }
 .about-insights .section-head h2 { max-width: none; }
 
@@ -708,6 +838,10 @@ a { color: inherit; }
 }
 
 @media (max-width: 900px) {
+  /* .about-intro-row is declared after the generic .hero__top collapse and
+     matches at the same specificity, so it wins and the About hero would
+     otherwise stay two-column on phones — squeezing the nav to ~108px. */
+  .about-intro-row { grid-template-columns: 1fr; }
   .founder { grid-template-columns: 1fr; }
   .insight { grid-template-columns: 1fr; gap: 0.75rem; }
   .insight__thumb { width: 100px; justify-self: start; order: -1; }

@@ -75,6 +75,42 @@ if (zoomTargets.length && !prefersReducedMotion) {
   updateZoom();
 }
 
+// ============ Pinned portfolio statement ============
+// The statement holds the right-hand column while the photo columns scroll
+// past it, then dims out as the section leaves — so it never competes with
+// the Momentum band that follows.
+const statementEl = document.getElementById('brandsStatement');
+const stageEl = document.querySelector('.brands__stage');
+if (statementEl && stageEl && !prefersReducedMotion) {
+  let pinTicking = false;
+
+  const updateStatement = () => {
+    pinTicking = false;
+    const rect = stageEl.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // Fade over the last 40% of the stage's travel through the viewport.
+    const remaining = rect.bottom - vh * 0.5;
+    const fadeZone = vh * 0.45;
+    let opacity = 1;
+    if (remaining < fadeZone) {
+      opacity = Math.max(0.12, remaining / fadeZone);
+    }
+    if (rect.top > vh) opacity = 1;
+    statementEl.style.opacity = opacity.toFixed(3);
+  };
+
+  const requestStatementUpdate = () => {
+    if (!pinTicking) {
+      pinTicking = true;
+      requestAnimationFrame(updateStatement);
+    }
+  };
+
+  window.addEventListener('scroll', requestStatementUpdate, { passive: true });
+  window.addEventListener('resize', requestStatementUpdate);
+  updateStatement();
+}
+
 // ============ Word-by-word reveal for [data-reveal] ============
 document.querySelectorAll('[data-reveal]').forEach((el) => {
   const words = el.textContent.trim().split(/\s+/);
