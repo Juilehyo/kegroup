@@ -26,6 +26,12 @@
 
   --measure: 36em;
   --pad-x: clamp(1.25rem, 5vw, 4.5rem);
+  --maxw: 1600px;
+  /* Caps the content column on wide displays while section backgrounds stay
+     full-bleed. The percentage resolves against the section's own width, so
+     this is scrollbar-safe in a way 100vw is not. Below --maxw it collapses
+     to --pad-x and nothing changes. */
+  --gutter: max(var(--pad-x), (100% - var(--maxw)) / 2);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -108,7 +114,7 @@ a { color: inherit; }
 
 /* ============ Hero (bold editorial statement) ============ */
 .hero {
-  padding: clamp(2rem, 5vh, 3.5rem) var(--pad-x) 0;
+  padding: clamp(2rem, 5vh, 3.5rem) var(--gutter) 0;
   background: var(--paper);
   overflow: hidden;
 }
@@ -235,7 +241,7 @@ a { color: inherit; }
   will-change: transform;
 }
 /* ============ Portfolio ============ */
-.brands { padding: clamp(4rem, 9vw, 7rem) var(--pad-x); }
+.brands { padding: clamp(4rem, 9vw, 7rem) var(--gutter); }
 
 .section-head { margin-bottom: clamp(3rem, 6vw, 4.5rem); }
 
@@ -412,7 +418,7 @@ a { color: inherit; }
 .momentum {
   background: var(--ink);
   color: var(--paper);
-  padding: clamp(4rem, 9vw, 7rem) var(--pad-x);
+  padding: clamp(4rem, 9vw, 7rem) var(--gutter);
 }
 .momentum .section-head h2 {
   font-size: clamp(2.2rem, 5.2vw, 4.2rem);
@@ -443,13 +449,15 @@ a { color: inherit; }
 .stat p { font-size: 0.92rem; opacity: 0.82; }
 .momentum__source {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  /* 0.72rem rendered at 11.5px — below the ~12px floor where small mono
+     type stops being comfortably legible on phones. */
+  font-size: 0.78rem;
   opacity: 0.5;
   margin-top: 1.2rem;
 }
 
 /* ============ Partners ============ */
-.partners { padding: clamp(4rem, 9vw, 7rem) var(--pad-x); }
+.partners { padding: clamp(4rem, 9vw, 7rem) var(--gutter); }
 .partners__intro { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
 .partners__intro p:last-child { margin-top: 1.2rem; }
 
@@ -471,7 +479,7 @@ a { color: inherit; }
 /* ============ Contact ============ */
 .contact {
   background: var(--paper-deep);
-  padding: clamp(4rem, 9vw, 7rem) var(--pad-x);
+  padding: clamp(4rem, 9vw, 7rem) var(--gutter);
 }
 .contact__inner {
   display: grid;
@@ -528,7 +536,7 @@ a { color: inherit; }
 .footer {
   background: var(--ink);
   color: var(--paper);
-  padding: clamp(2.5rem, 6vw, 4rem) var(--pad-x) 2rem;
+  padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) 2rem;
   overflow: hidden;
 }
 .footer__wordmark {
@@ -605,11 +613,23 @@ a { color: inherit; }
   .momentum__grid { grid-template-columns: 1fr; }
 }
 
+/* On phones the four hero links no longer fit one row, and wrapping leaves a
+   ragged 3 + 1. A fixed two-up grid reads as deliberate instead. */
+@media (max-width: 600px) {
+  .hero__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: start;
+    gap: 0.75rem 1rem;
+  }
+  .hero__navlink-text { text-align: left; }
+}
+
 /* ============ Compact nav — appears once scrolled past the hero ============ */
 .nav-mini {
   position: fixed;
   top: clamp(1.25rem, 3vh, 2rem);
-  right: var(--pad-x);
+  right: var(--gutter);
   z-index: 150;
   display: flex;
   flex-direction: column;
@@ -757,7 +777,7 @@ a { color: inherit; }
   color: rgba(255, 255, 255, 0.92);
 }
 
-.about-founders { padding: clamp(4rem, 9vw, 7rem) var(--pad-x); }
+.about-founders { padding: clamp(4rem, 9vw, 7rem) var(--gutter); }
 .about-founders .section-head { margin-bottom: clamp(2rem, 5vw, 3.5rem); }
 .about-founders .section-head h2 { max-width: none; }
 
@@ -772,7 +792,7 @@ a { color: inherit; }
 .founder h3 { font-size: 1.15rem; font-weight: 700; }
 .founder p { max-width: 42em; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.7; }
 
-.about-insights { padding: clamp(4rem, 9vw, 7rem) var(--pad-x) clamp(5rem, 10vw, 8rem); }
+.about-insights { padding: clamp(4rem, 9vw, 7rem) var(--gutter) clamp(5rem, 10vw, 8rem); }
 .about-insights .section-head { margin-bottom: clamp(2rem, 5vw, 3.5rem); }
 .about-insights .section-head h2 { max-width: none; }
 
@@ -809,6 +829,10 @@ a { color: inherit; }
 }
 
 @media (max-width: 900px) {
+  /* .about-intro-row is declared after the generic .hero__top collapse and
+     matches at the same specificity, so it wins and the About hero would
+     otherwise stay two-column on phones — squeezing the nav to ~108px. */
+  .about-intro-row { grid-template-columns: 1fr; }
   .founder { grid-template-columns: 1fr; }
   .insight { grid-template-columns: 1fr; gap: 0.75rem; }
   .insight__thumb { width: 100px; justify-self: start; order: -1; }
