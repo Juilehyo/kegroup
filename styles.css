@@ -125,22 +125,23 @@ a { color: inherit; }
   flex-direction: column;
   justify-content: space-between;
 }
+/* The seal marks carry the K&E logo artwork — a stamped seal on a
+   transparent ground. `contain` rather than `cover` so the stamp's rough
+   outer edge is never cropped, and no radius/clip for the same reason. */
 .hero__mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 112px;
   height: 112px;
-  background: var(--seal);
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 2rem;
-  border-radius: 10px;
   text-decoration: none;
-  letter-spacing: 0.01em;
 }
-.hero__mark .amp { color: var(--brass-bright); }
+.hero__mark img,
+.nav-mini__mark img,
+.nav-overlay__mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
 .hero__kicker {
   font-family: "Satoshi", var(--font-body), sans-serif;
   font-weight: 400;
@@ -234,21 +235,88 @@ a { color: inherit; }
 
 .section-head { margin-bottom: clamp(3rem, 6vw, 4.5rem); }
 
-.brand {
+.brands__head { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+
+/* Editorial stage: two staggered photo columns on the left, and a third
+   column on the right that holds a statement pinned through the scroll.
+   Thin vertical rules divide the three columns — drawn as background
+   gradients so they run the full height of the section rather than
+   stopping at each card. Reading order: bhc → Tous les Jours → SALT →
+   Mammoth, with bhc leading wide across both left columns and Mammoth
+   closing the left column at the bottom. */
+.brands__stage {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 5vw, 5rem);
-  align-items: center;
-  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  grid-template-columns: 23% 43% 34%;
+  row-gap: clamp(3rem, 7vw, 6.5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
   border-top: 1px solid var(--hairline);
+  background-image:
+    linear-gradient(var(--hairline), var(--hairline)),
+    linear-gradient(var(--hairline), var(--hairline));
+  background-size: 1px 100%, 1px 100%;
+  background-position: 23% 0, 66% 0;
+  background-repeat: no-repeat;
 }
-.brand--flip .brand__media { order: 2; }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Column assignments — explicit so the stagger is art-directed, not
+   left to auto-flow. */
+#bhc     { grid-column: 1 / 3; grid-row: 1; padding-right: var(--col-pad); }
+#tlj     { grid-column: 2;     grid-row: 2; padding: 0 var(--col-pad); }
+#salt    { grid-column: 2;     grid-row: 3; padding: 0 var(--col-pad); }
+#mammoth { grid-column: 1;     grid-row: 3; padding-right: var(--col-pad); margin-top: clamp(2.5rem, 8vw, 7rem); }
+
+.brands__stage { --col-pad: clamp(0.9rem, 1.5vw, 1.6rem); }
+
+/* bhc leads with a wide photo that crosses the first rule, its caption
+   dropping into the centre column beneath. */
+.brand--lead {
+  display: grid;
+  grid-template-columns: 23fr 43fr;
+}
+.brand--lead .brand__media {
+  grid-column: 1 / -1;
+  width: 68%;
+  aspect-ratio: 3 / 2;
+}
+.brand--lead .brand__body {
+  grid-column: 2;
+  padding-left: var(--col-pad);
+}
+
+/* Mammoth reads as a tall closing plate. */
+.brand--mmth .brand__media { aspect-ratio: 4 / 5; }
+.brand--tlj  .brand__media { aspect-ratio: 4 / 3; }
+
+/* The pinned statement holds the right column for the whole section. */
+/* Rows are named explicitly: `1 / -1` would collapse to row 1 here, since
+   an undeclared grid-template-rows leaves every row implicit. */
+.brands__pin {
+  grid-column: 3;
+  grid-row: 1 / 4;
+  padding-left: clamp(1.4rem, 3vw, 3rem);
+}
+.brands__statement {
+  position: sticky;
+  top: clamp(6rem, 34vh, 20rem);
+  max-width: 14em;
+  font-size: clamp(1.5rem, 2.7vw, 2.75rem);
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  transition: opacity 0.25s linear;
+}
 
 .brand__media {
   --zp: 0;
   border-radius: 4px;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   overflow: hidden;
+  margin-bottom: 1.2rem;
 }
 .brand__media img {
   width: 100%;
@@ -259,42 +327,82 @@ a { color: inherit; }
 }
 .brand--mmth .brand__media img { object-position: center 30%; }
 
-.brand__body h3 { margin-bottom: 0.2rem; }
-.brand__kr {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  margin-bottom: 1.1rem;
+.brand__body h3 {
+  font-family: "Satoshi", var(--font-body), sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  margin-bottom: 0.65rem;
 }
-.brand__body > p:not(.eyebrow):not(.brand__kr) { margin-bottom: 1.4rem; font-size: 0.98rem; }
+.brand__body p {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
 
 .brand__link {
-  display: inline-block;
-  margin-top: 1.2rem;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 1.1rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.88rem;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.brand__link:hover {
   color: var(--brass);
-  text-underline-offset: 4px;
+  border-color: currentColor;
 }
 
-.chips {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+/* Below the three-column threshold the statement unpins and leads the
+   section, and the photos fall into two plain columns. */
+@media (max-width: 1040px) {
+  .brands__stage {
+    grid-template-columns: 1fr 1fr;
+    background-position: 50% 0;
+    background-size: 1px 100%, 0 0;
+  }
+  #bhc     { grid-column: 1 / -1; grid-row: 2; padding-right: 0; }
+  #tlj     { grid-column: 1;      grid-row: 3; padding: 0 var(--col-pad) 0 0; }
+  #salt    { grid-column: 2;      grid-row: 3; padding: 0 0 0 var(--col-pad); }
+  #mammoth { grid-column: 1;      grid-row: 4; padding-right: var(--col-pad); margin-top: 0; }
+  .brand--lead { grid-template-columns: 1fr 1fr; }
+  .brand--lead .brand__media { width: 100%; }
+  .brands__pin {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding-left: 0;
+    padding-bottom: clamp(1rem, 3vw, 2rem);
+  }
+  .brands__statement { position: static; max-width: 20em; }
 }
-.chips li {
-  font-size: 0.8rem;
-  font-weight: 400;
-  padding: 0.3rem 0.75rem;
-  border: 1px solid rgba(28, 25, 22, 0.25);
-  border-radius: 999px;
+
+@media (max-width: 640px) {
+  .brands__stage {
+    grid-template-columns: 1fr;
+    background-image: none;
+    row-gap: 0;
+  }
+  #bhc, #tlj, #salt, #mammoth {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 0;
+    padding: clamp(2rem, 8vw, 2.75rem) 0 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .brands__pin { grid-column: 1; grid-row: 1; }
+  .brand--lead { display: flex; flex-direction: column; }
+  .brand--lead .brand__media { width: 100%; }
+  .brand--lead .brand__body { padding-left: 0; }
+  .brand--mmth .brand__media,
+  .brand--tlj .brand__media { aspect-ratio: 3 / 2; }
 }
-.brand--tlj .chips li { border-color: rgba(46, 107, 79, 0.45); color: var(--tlj); }
-.brand--mmth .chips li { border-color: rgba(95, 122, 30, 0.5); color: var(--mmth); }
-.brand--bhc .chips li { border-color: rgba(168, 124, 52, 0.55); color: #8a6510; }
-.brand--salt .chips li { border-color: rgba(168, 124, 52, 0.5); color: var(--brass); }
 
 /* ============ Momentum ============ */
 .momentum {
@@ -471,9 +579,7 @@ a { color: inherit; }
 /* ============ Responsive ============ */
 @media (max-width: 900px) {
   .hero__top { grid-template-columns: 1fr; }
-  .brand,
   .contact__inner { grid-template-columns: 1fr; }
-  .brand--flip .brand__media { order: 0; }
   .momentum__grid { grid-template-columns: 1fr 1fr; }
   .partners__grid { grid-template-columns: 1fr; }
   .hero__mark { margin-bottom: 1.5rem; }
@@ -516,20 +622,11 @@ a { color: inherit; }
   pointer-events: auto;
 }
 .nav-mini__mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 48px;
   height: 48px;
-  background: var(--seal);
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.95rem;
-  border-radius: 8px;
   text-decoration: none;
 }
-.nav-mini__mark .amp { color: var(--brass-bright); }
 .nav-mini__burger {
   width: 48px;
   height: 36px;
@@ -577,14 +674,14 @@ a { color: inherit; }
   align-items: flex-start;
   justify-content: space-between;
 }
+/* The overlay ground is the same seal red as the logo's own field, so on
+   this surface the mark reads as its white frame and glyph alone. */
 .nav-overlay__mark {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: #fff;
+  display: block;
+  width: 52px;
+  height: 52px;
   text-decoration: none;
 }
-.nav-overlay__mark .amp { color: rgba(255, 255, 255, 0.6); }
 .nav-overlay__close {
   background: none;
   border: none;
