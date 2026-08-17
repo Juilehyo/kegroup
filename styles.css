@@ -148,16 +148,30 @@ a { color: inherit; }
   object-fit: contain;
   display: block;
 }
+/* The intro column is flex/space-between, so this paragraph's bottom sits on
+   the row's bottom edge — level with the photo beside it. That only holds
+   while the column stays shorter than the photo. At a fixed 21px the text
+   kept its size as the column narrowed, wrapping onto more lines until the
+   paragraph outgrew the photo and hung ~100px below it. Scaling the type
+   with the viewport holds the line count roughly constant, so the two
+   bottoms stay level across the three-column range. */
 .hero__kicker {
   font-family: "Satoshi", var(--font-body), sans-serif;
   font-weight: 400;
-  font-size: 21px;
+  font-size: clamp(13px, 1.2vw, 19px);
   line-height: 1.7;
   color: var(--ink-soft);
   max-width: 30em;
   text-indent: 2.4em;
 }
+/* 3:2 sets the photo's natural height, which is usually what makes the row
+   tall. When something else is taller — the nav column often is by a few
+   pixels — the photo stretches to the row instead of leaving the paragraph
+   beside it hanging below its bottom edge. */
+.hero__image { display: flex; }
 .hero__image img {
+  width: 100%;
+  height: 100%;
   aspect-ratio: 3 / 2;
   object-fit: cover;
   border-radius: 2px;
@@ -179,7 +193,10 @@ a { color: inherit; }
   height: 1.35em;
   font-family: "HK Kontrast", var(--font-display);
   font-weight: 700;
-  font-size: 49px;
+  /* Fluid, not a fixed 49px: four links at a fixed size keep their height as
+     the viewport narrows, and this column then out-grows the photo beside it
+     and drags it away from its 3:2 crop. */
+  font-size: clamp(1.9rem, 3.1vw, 49px);
   line-height: 1.35;
   color: var(--ink);
   text-decoration: none;
