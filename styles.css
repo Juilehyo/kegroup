@@ -227,6 +227,10 @@ a { color: inherit; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* The plate sits right of centre in the source, so on narrow viewports —
+     where cover crops hard horizontally — hold the focal point to the right
+     rather than centring on the empty table. */
+  object-position: 78% center;
   transform: scale(calc(1 + 0.14 * var(--zp)));
   will-change: transform;
 }

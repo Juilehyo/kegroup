@@ -1,2 +1,7 @@
 .DS_Store
 **/.DS_Store
+
+# Full-resolution masters. The web-optimised derivatives beside them are the
+# committed assets; keeping the multi-megabyte originals out of history keeps
+# clones small (git history is permanent, so they can't be pruned later).
+assets/bg1.png
