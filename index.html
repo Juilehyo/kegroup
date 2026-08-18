@@ -22,8 +22,14 @@
         <a class="hero__mark" href="#top" aria-label="K&amp;E home"><img src="assets/logo.png" alt=""></a>
         <p class="hero__kicker">We operate and grow a portfolio of Korean food businesses — bakery cafés in Virginia, premium Korean BBQ in Philadelphia, and Korea's most-loved coffee and chicken brands heading to new markets, from the US to Dubai.</p>
       </div>
-      <figure class="hero__image">
-        <img src="assets/bhc-food.jpg" alt="A spread of Korean fried chicken dishes and sides">
+      <!-- Cross-fading slideshow, one frame per business. The first frame
+           carries the alt text; the rest are decorative duplicates of the
+           same idea, so they stay out of the accessibility tree. -->
+      <figure class="hero__image" id="heroSlides">
+        <img class="is-active" src="assets/bhc-food.jpg" alt="A spread of Korean fried chicken dishes and sides">
+        <img src="assets/tlj-pastries.jpg" alt="" aria-hidden="true" loading="lazy">
+        <img src="assets/hero-salt.jpg" alt="" aria-hidden="true" loading="lazy">
+        <img src="assets/mammoth-store.jpg" alt="" aria-hidden="true" loading="lazy">
       </figure>
       <nav class="hero__nav" id="navLinks" aria-label="Main">
         <a href="about.html"><span class="hero__navlink-inner"><span class="hero__navlink-text">About</span><span class="hero__navlink-text">Story</span></span></a>
@@ -32,7 +38,7 @@
         <a href="contact.html"><span class="hero__navlink-inner"><span class="hero__navlink-text">Contact</span><span class="hero__navlink-text">Chat</span></span></a>
       </nav>
     </div>
-    <p class="hero__statement" data-reveal>Building Korea's best restaurant brands.</p>
+    <p class="hero__statement" data-reveal>Building Korea's<br>best restaurant brands.</p>
   </section>
 
   <!-- ============ SCROLL ZOOM FEATURE ============ -->

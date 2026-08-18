@@ -158,24 +158,34 @@ a { color: inherit; }
 .hero__kicker {
   font-family: "Satoshi", var(--font-body), sans-serif;
   font-weight: 400;
-  font-size: clamp(13px, 1.2vw, 19px);
+  font-size: 10px;
   line-height: 1.7;
   color: var(--ink-soft);
   max-width: 30em;
   text-indent: 2.4em;
 }
-/* 3:2 sets the photo's natural height, which is usually what makes the row
-   tall. When something else is taller — the nav column often is by a few
-   pixels — the photo stretches to the row instead of leaving the paragraph
-   beside it hanging below its bottom edge. */
-.hero__image { display: flex; }
-.hero__image img {
-  width: 100%;
-  height: 100%;
+/* Slideshow frames stack on top of each other, so the figure itself has to
+   carry the size: absolutely positioned children contribute no height. 3:2
+   sets its natural height, which is usually what makes the row tall; when
+   something else is taller — the nav column often is by a few pixels — the
+   stretch wins over the ratio and the photo still reaches the bottom edge
+   the paragraph beside it sits on. */
+.hero__image {
+  position: relative;
   aspect-ratio: 3 / 2;
-  object-fit: cover;
+  overflow: hidden;
   border-radius: 2px;
 }
+.hero__image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero__image img.is-active { opacity: 1; }
 
 /* Vertical nav, right-aligned, inside the hero grid */
 .hero__nav {
@@ -227,7 +237,11 @@ a { color: inherit; }
 .hero__statement {
   font-family: "HK Kontrast", var(--font-display);
   font-weight: 700;
-  font-size: clamp(3.2rem, 9.6vw, 10rem);
+  /* Sized so "best restaurant brands." holds one line: it needs ~10.7x the
+     font size in width, and the content column is capped at --maxw, so the
+     ceiling has to stop climbing too or the line would outgrow the column
+     on wide displays. */
+  font-size: clamp(3.2rem, 8.2vw, 9rem);
   line-height: 1;
   letter-spacing: -0.015em;
   max-width: 24em;
@@ -612,6 +626,10 @@ a { color: inherit; }
   .rt-word { transform: none; transition: none; }
   .btn, .hero__nav a, .hero__navlink-inner { transition: none; }
   .zoomfx__frame img, .brand__media img { transform: none; }
+  /* The slideshow never advances here (the script opts out), so the first
+     frame must stay painted rather than sitting at opacity 0. */
+  .hero__image img { transition: none; }
+  .hero__image img.is-active { opacity: 1; }
 }
 
 /* ============ Responsive ============ */

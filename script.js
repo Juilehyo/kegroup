@@ -111,15 +111,58 @@ if (statementEl && stageEl && !prefersReducedMotion) {
   updateStatement();
 }
 
+// ============ Hero slideshow ============
+// Cross-fades the hero photo through one frame per business. Held still for
+// prefers-reduced-motion, and paused while the tab is hidden so a background
+// tab is not burning frames.
+const heroSlides = document.getElementById('heroSlides');
+if (heroSlides && !prefersReducedMotion) {
+  const frames = Array.from(heroSlides.querySelectorAll('img'));
+  if (frames.length > 1) {
+    let index = 0;
+    let timer = null;
+
+    const advance = () => {
+      frames[index].classList.remove('is-active');
+      index = (index + 1) % frames.length;
+      frames[index].classList.add('is-active');
+    };
+
+    const start = () => {
+      if (!timer) timer = setInterval(advance, 4200);
+    };
+    const stop = () => {
+      clearInterval(timer);
+      timer = null;
+    };
+
+    document.addEventListener('visibilitychange', () =>
+      document.hidden ? stop() : start()
+    );
+    start();
+  }
+}
+
 // ============ Word-by-word reveal for [data-reveal] ============
+// Split on any author-placed <br> first, so a deliberate line break survives
+// the rebuild — reading textContent alone would flatten it away.
 document.querySelectorAll('[data-reveal]').forEach((el) => {
-  const words = el.textContent.trim().split(/\s+/);
-  el.innerHTML = words
-    .map(
-      (w) =>
-        `<span class="rt-mask"><span class="rt-word">${w}</span></span>`
-    )
-    .join(' ');
+  const lines = el.innerHTML.split(/<br\s*\/?>/i);
+  el.innerHTML = lines
+    .map((line) => {
+      const probe = document.createElement('div');
+      probe.innerHTML = line;
+      return probe.textContent
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(
+          (w) =>
+            `<span class="rt-mask"><span class="rt-word">${w}</span></span>`
+        )
+        .join(' ');
+    })
+    .join('<br>');
 });
 
 const wordEls = document.querySelectorAll('[data-reveal] .rt-word');
