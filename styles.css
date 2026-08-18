@@ -183,7 +183,9 @@ a { color: inherit; }
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1s ease;
+  /* Kept well under the cycle interval so each frame gets a beat of its own
+     rather than the photo living permanently mid-fade. */
+  transition: opacity 0.55s ease;
 }
 .hero__image img.is-active { opacity: 1; }
 

@@ -129,7 +129,7 @@ if (heroSlides && !prefersReducedMotion) {
     };
 
     const start = () => {
-      if (!timer) timer = setInterval(advance, 4200);
+      if (!timer) timer = setInterval(advance, 2200);
     };
     const stop = () => {
       clearInterval(timer);
