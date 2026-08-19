@@ -700,6 +700,12 @@ a { color: inherit; }
   overflow: hidden;
   vertical-align: bottom;
   text-indent: 0;
+  /* The mask clips to a tight line-height:1 box, which cuts off descenders
+     (g, y, p) on tall display type. Padding it out a little and pulling the
+     next line back up with a matching negative margin keeps the descender
+     visible without changing the visual line spacing. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
 }
 .rt-word {
   display: inline-block;
