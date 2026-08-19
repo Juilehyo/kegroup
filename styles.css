@@ -736,6 +736,11 @@ a { color: inherit; }
 
 @media (max-width: 640px) {
   .momentum__grid { grid-template-columns: 1fr; }
+  /* Below ~576px, 8.9vw drops under the 3.2rem floor and the clamp stops
+     shrinking — each <br>-separated line then wraps a second time on its
+     own. Scaling purely off vw here keeps "best restaurant brands." (the
+     longer of the two lines) to one line down to small phone widths. */
+  .hero__statement { font-size: 8vw; }
 }
 
 /* ============ Compact nav — appears once scrolled past the hero ============ */
