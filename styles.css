@@ -176,9 +176,19 @@ a { color: inherit; }
    the paragraph beside it sits on. */
 .hero__image {
   position: relative;
-  aspect-ratio: 3 / 2;
+  width: 100%;
   overflow: hidden;
   border-radius: 2px;
+}
+/* aspect-ratio on a grid item whose only content is absolutely-positioned
+   images is unreliable on some iOS Safari versions — the row can collapse
+   to zero height there even though it works everywhere this was tested.
+   The padding-top trick sizes off simple block layout instead, which every
+   browser gets right. 66.66% = 2/3, i.e. a 3:2 box. */
+.hero__image::before {
+  content: "";
+  display: block;
+  padding-top: 66.666%;
 }
 .hero__image img {
   position: absolute;
