@@ -113,33 +113,22 @@ if (statementEl && stageEl && !prefersReducedMotion) {
 
 // ============ Hero slideshow ============
 // Cross-fades the hero photo through one frame per business. Held still for
-// prefers-reduced-motion, and paused while the tab is hidden so a background
-// tab is not burning frames.
+// prefers-reduced-motion. Runs on a plain, unconditional interval — an
+// earlier version paused on the Page Visibility API (document.hidden) and
+// resumed on 'visibilitychange', but some in-app browsers (KakaoTalk,
+// Instagram, etc.) never fire a reliable 'visible' transition, so a spurious
+// hidden state left the slideshow stuck on one frame permanently. The cost
+// of not pausing in a backgrounded tab is negligible for a CSS class toggle.
 const heroSlides = document.getElementById('heroSlides');
 if (heroSlides && !prefersReducedMotion) {
   const frames = Array.from(heroSlides.querySelectorAll('img'));
   if (frames.length > 1) {
     let index = 0;
-    let timer = null;
-
-    const advance = () => {
+    setInterval(() => {
       frames[index].classList.remove('is-active');
       index = (index + 1) % frames.length;
       frames[index].classList.add('is-active');
-    };
-
-    const start = () => {
-      if (!timer) timer = setInterval(advance, 2200);
-    };
-    const stop = () => {
-      clearInterval(timer);
-      timer = null;
-    };
-
-    document.addEventListener('visibilitychange', () =>
-      document.hidden ? stop() : start()
-    );
-    start();
+    }, 2200);
   }
 }
 

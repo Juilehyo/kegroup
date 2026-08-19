@@ -780,6 +780,12 @@ a { color: inherit; }
   height: 2px;
   background: var(--ink);
 }
+/* The hero's own large logo is already on screen on phones, so the small
+   mark next to the hamburger would just duplicate it — hide it there and
+   let the hamburger stand alone. */
+@media (max-width: 900px) {
+  .nav-mini__mark { display: none; }
+}
 
 /* ============ Full-screen nav overlay ============ */
 .nav-overlay {
