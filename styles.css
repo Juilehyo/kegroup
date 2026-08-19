@@ -717,34 +717,15 @@ a { color: inherit; }
   .momentum__grid { grid-template-columns: 1fr 1fr; }
   .partners__grid { grid-template-columns: 1fr; }
   .hero__mark { margin-bottom: 1.5rem; }
-  .hero__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    height: auto;
-    border-left: none;
-    border-top: 1px solid var(--hairline);
-    padding-left: 0;
-    padding-top: 1.25rem;
-    gap: 0.4em 1.4em;
-  }
-  .hero__nav a { font-size: 1.15rem; }
+  /* The inline link row doesn't fit well once the hero collapses to one
+     column — hand navigation off to the fixed hamburger instead. Forcing
+     it visible here happens later in the file, after the base .nav-mini
+     rule, so it isn't lost to source-order at equal specificity. */
+  .hero__nav { display: none; }
 }
 
 @media (max-width: 640px) {
   .momentum__grid { grid-template-columns: 1fr; }
-}
-
-/* On phones the four hero links no longer fit one row, and wrapping leaves a
-   ragged 3 + 1. A fixed two-up grid reads as deliberate instead. */
-@media (max-width: 600px) {
-  .hero__nav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    justify-items: start;
-    gap: 0.75rem 1rem;
-  }
-  .hero__navlink-text { text-align: left; }
 }
 
 /* ============ Compact nav — appears once scrolled past the hero ============ */
@@ -766,6 +747,12 @@ a { color: inherit; }
   opacity: 1;
   transform: none;
   pointer-events: auto;
+}
+/* On phones the hero's inline nav links are hidden (see the 900px block
+   above), so the hamburger has to stand in immediately rather than waiting
+   to fade in past the hero. */
+@media (max-width: 900px) {
+  .nav-mini { opacity: 1; transform: none; pointer-events: auto; }
 }
 .nav-mini__mark {
   display: block;
