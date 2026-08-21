@@ -166,7 +166,6 @@ a { color: inherit; }
   line-height: 1.7;
   color: var(--ink-soft);
   max-width: 30em;
-  text-indent: 2.4em;
 }
 /* Slideshow frames stack on top of each other, so the figure itself has to
    carry the size: absolutely positioned children contribute no height. 3:2
@@ -427,6 +426,11 @@ a { color: inherit; }
 .brand__link:hover {
   color: var(--brass);
   border-color: currentColor;
+}
+.brand__link-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
 }
 
 /* Below the three-column threshold the statement unpins and leads the
